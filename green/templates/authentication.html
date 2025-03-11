@@ -1,0 +1,424 @@
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='58' height='58' viewBox='0 0 58 58' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='10' fill='%23000000' /%3E%3Ccircle cx='10' cy='48' r='10' fill='%23000000' /%3E%3Ccircle cx='48' cy='48' r='10' fill='%23000000' /%3E%3Ccircle cx='48' cy='10' r='10' fill='%23000000' /%3E%3Cpath d='M42 10H15' stroke='%23000000' stroke-width='3' /%3E%3Cpath d='M12 16V42' stroke='%23000000' stroke-width='3' /%3E%3Cpath d='M15 49H44' stroke='%23000000' stroke-width='3' /%3E%3Cpath d='M49 44V29' stroke='%23000000' stroke-width='3' stroke-linecap='round' /%3E%3C/svg%3E">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+  <title>User Authentication - Green Credit Exchange</title>
+  <style>
+   body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+    .sign-in-box {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: #010010;
+      border: 1px solid #374151;
+    }
+    .sign-in-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    .input-field {
+      transition: border-color 0.3s ease;
+      border-color: #4f46e5;
+    }
+    .input-field:focus {
+      border-color: #73FDAA;
+    }
+
+    /* Loader styles */
+    .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8); /* Dark background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Ensure it is on top */
+    }
+
+    .loader .spinner {
+        border: 8px solid rgba(115, 253, 170, 0.3); /* Light green */
+        border-top: 8px solid #73FDAA; /* Darker green */
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+  </style>
+  
+ </head>
+ <body class="bg-black text-white min-h-screen flex items-center">
+       
+       <div class="container flex justify-between mx-auto">
+              <div class="p-4 sm:p-8 md:p-16 justify-center w-full">
+              <div class="max-w-xs sm:max-w-md mx-auto border border-gray-700 rounded-xl p-6 sign-in-box relative">
+                     <div class="absolute top-0 left-0 bg-[#73FDAA] w-16 h-16 rounded-full blur-2xl"></div>
+                     <div class="absolute bottom-0 right-0 bg-[#73FDAA] w-16 h-16 rounded-full blur-2xl"></div>
+                     <div class="flex justify-center mb-4"> <!-- Centering the button -->
+                            <a href="#">
+                                   <button class="text-sm text-gray-400 flex items-center bg-gray-700 px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300">
+                                       <i class="fas fa-arrow-left mr-2"></i>
+                                       Back to website
+                                   </button>
+                            </a>                               
+                     </div>
+              <h1 id="form-heading" class="text-2xl sm:text-3xl font-semibold mb-1">
+              Sign in to continue
+              </h1>
+              <p id="form-paragraph" class="text-gray-400 mb-6">
+              Don't have an account?
+              <a class="text-[#73FDAA]" href="#" onclick="toggleForm()">
+                     Sign up
+              </a>
+              </p>
+              <form id="login-form" method="POST" class="space-y-4">
+                {% csrf_token %}
+              <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" placeholder="Enter your registered Email ID" name="email" type="email" id="login_email" required/>
+              <div class="relative">
+                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" placeholder="Enter your password" name="password" type="password" id="login_password" required/>
+                     <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
+              </div>
+              <p class="text-gray-400 text-sm">
+                     <a class="text-[#73FDAA] hover:underline" href="#">
+                     Forgot Password?
+                     </a>
+                     </p>
+              <button class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" type="submit">
+                     Sign in
+              </button>
+              </form>
+              <form id="register-form" method="POST" class="space-y-4" style="display: none;">
+                {% csrf_token %}
+                     <!-- Step 1 of 3 -->
+                     <div id="step-1" class="space-y-4">
+                            <h1 class="text-xl sm:text-2xl font-semibold mb-1">
+                            Step 1 of 3
+                            </h1>
+                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                            placeholder="Enter your Full Name" name="full_name" id="full_name" type="text" required/>        
+                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                            placeholder="Enter your Email ID" name="email" id="email" type="email" required/>
+                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                            placeholder="Enter your Mobile Number" name="phone_number" id="phone_number" type="text" required/>
+                     <div class="flex justify-between">
+                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200 hidden" onclick="prevStep()">Previous</button>
+                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="nextStep(event)">Next</button>
+                     </div>
+                     </div>
+                     <!-- Step 2 of 3 -->
+                     <div id="step-2" class="space-y-4" style="display: none;">
+                            <h1 class="text-xl sm:text-2xl font-semibold mb-1">
+                            Step 2 of 3
+                            </h1>
+                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                            placeholder="Enter your PAN" name="pan_card" type="text" id="pan_card" required/>
+                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                            placeholder="Enter your Aadhar Number" name="aadhaar_card" id="aadhaar_card" type="text" required/>
+                    <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                            placeholder="Enter your Date of Birth" name="dob" id="dob" type="date" required/>
+                     <div class="flex justify-between space-x-4">
+                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="prevStep()">Previous</button>
+                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="nextStep(event)">Next</button>
+                     </div>
+                     </div>
+                     <!-- Step 3 of 3 -->
+                     <div id="step-3" class="space-y-4" style="display: none;">
+                            <h1 class="text-xl sm:text-2xl font-semibold mb-1">
+                            Step 3 of 3
+                            </h1>
+                     <div class="relative">
+                            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                                   placeholder="Create a password" name="password" id="password" type="password" required/>
+                            <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
+                     </div>
+                     <div class="relative">
+                            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+                                   placeholder="Confirm your password" name="confirm_password" id="confirm_password" type="password" required/>
+                            <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
+                     </div>
+                     <div class="flex justify-between space-x-4">
+                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="prevStep()">Previous</button>
+                            <button class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" type="submit">Sign up</button>
+                     </div>
+                     </div>
+              </form>    
+              </div>
+              </div>
+       </div>
+       <div id="otpSuccessModal" class="fixed inset-0 bg-black/30 backdrop-blur-md flex justify-center items-center hidden z-[1000]">
+                  <div class="relative w-full max-w-sm mx-4">
+                      <!-- Decorative Elements -->
+                      <div class="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] rounded-full blur-2xl opacity-20"></div>
+                      <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] rounded-full blur-2xl opacity-20"></div>
+
+                      <!-- Main Modal Content -->
+                      <div class="relative bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 flex flex-col items-center">
+                          <!-- Success Animation Container -->
+                          <div class="relative w-24 h-24 mb-6">
+                              <!-- Pulse Effect -->
+                              <div class="absolute inset-0 bg-[#53BA2A]/20 rounded-full animate-ping"></div>
+                              
+                              <!-- Success Circle -->
+                              <div class="absolute inset-0 bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] rounded-full flex items-center justify-center">
+                                  <!-- Success Checkmark -->
+                                  <svg class="w-12 h-12 text-white animate-checkmark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                  </svg>
+                              </div>
+                          </div>
+
+                          <!-- Success Message -->
+                          <h2 class="text-2xl font-bold bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] bg-clip-text text-transparent mb-4">
+                              Authorization Successful
+                          </h2>
+                          
+                          <!-- Success Description -->
+                          <div class="text-white/80 text-center space-y-1">
+                              <p class="text-lg">User Authenticated Successfully!</p>
+                              <p class="text-sm opacity-80">Sit tight, you will be redirected shortly.</p>
+                          </div>
+
+                          <!-- Loading Indicator -->
+                          <div class="mt-6 flex items-center space-x-2">
+                              <div class="w-2 h-2 bg-[#B4D33D] rounded-full animate-bounce"></div>
+                              <div class="w-2 h-2 bg-[#B4D33D] rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                              <div class="w-2 h-2 bg-[#B4D33D] rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- Registration Success Modal -->
+<div id="registerSuccessModal" class="fixed inset-0 bg-black/30 backdrop-blur-md flex justify-center items-center {% if show_registration_success_modal %}block{% else %}hidden{% endif %} z-[1000]">
+       <div class="relative w-full max-w-sm mx-4">
+           <!-- Decorative Elements -->
+           <div class="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] rounded-full blur-2xl opacity-20"></div>
+           <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] rounded-full blur-2xl opacity-20"></div>
+    
+           <!-- Main Modal Content -->
+           <div class="relative bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 flex flex-col items-center">
+               <!-- Success Animation Container -->
+               <div class="relative w-24 h-24 mb-6">
+                   <!-- Outer Ring Animation -->
+                   <div class="absolute inset-0 bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] rounded-full animate-spin-slow opacity-20"></div>
+                   
+                   <!-- Pulse Effect -->
+                   <div class="absolute inset-0 bg-[#53BA2A]/20 rounded-full animate-ping"></div>
+                   
+                   <!-- Success Circle -->
+                   <div class="absolute inset-0 bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] rounded-full flex items-center justify-center">
+                       <!-- Success Checkmark -->
+                       <svg class="w-12 h-12 text-white animate-checkmark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                       </svg>
+                   </div>
+               </div>
+    
+               <!-- Confetti Animation -->
+               <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                   <div class="confetti-container"></div>
+               </div>
+    
+               <!-- Success Message -->
+               <h2 class="text-2xl font-bold bg-gradient-to-b from-[#B4D33D] to-[#53BA2A] bg-clip-text text-transparent mb-4">
+                   Registration Successful!
+               </h2>
+               
+               <!-- Success Description -->
+               <div class="text-white/80 text-center space-y-2">
+                   <p class="text-lg">Welcome to Green Credit Exchange!</p>
+                   <p class="text-sm opacity-80">Your registration is complete.<br>Sit tight, you will be redirected shortly.</p>
+               </div>
+    
+               <!-- Loading Indicator -->
+               <div class="mt-6 flex items-center space-x-2">
+                   <div class="w-2 h-2 bg-[#B4D33D] rounded-full animate-bounce"></div>
+                   <div class="w-2 h-2 bg-[#B4D33D] rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                   <div class="w-2 h-2 bg-[#B4D33D] rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+               </div>
+           </div>
+       </div>
+    </div>
+    <div id="notification" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg hidden">
+       <span id="notification-message"></span>
+   </div>
+   
+       <script>
+
+              function toggleForm() {
+                  const loginForm = document.getElementById('login-form');
+                  const registerForm = document.getElementById('register-form');
+                  const heading = document.getElementById('form-heading');
+                  const paragraph = document.getElementById('form-paragraph');
+                  const link = paragraph.querySelector('a'); // Get the anchor tag
+          
+                  if (loginForm.style.display === 'none') {
+                      loginForm.style.display = 'block';
+                      registerForm.style.display = 'none';
+                      heading.textContent = "Sign in to continue";
+                      paragraph.firstChild.textContent = "Don't have an account? "; // Keep the existing structure
+                      link.textContent = "Sign up";
+                  } else {
+                      loginForm.style.display = 'none';
+                      registerForm.style.display = 'block';
+                      heading.textContent = "Create a new account";
+                      paragraph.firstChild.textContent = "Already have an account? "; // Keep the existing structure
+                      link.textContent = "Sign in";
+                  }
+              }
+          
+              let currentStep = 1;
+              function showStep(step) {
+              document.getElementById('step-1').style.display = 'none';
+              document.getElementById('step-2').style.display = 'none';
+              document.getElementById('step-3').style.display = 'none';
+              document.getElementById(`step-${step}`).style.display = 'block';
+              }
+
+              // Function to check if all required inputs are filled in the current step
+              function validateStep(step) {
+              const inputs = document.querySelectorAll(`#step-${step} input[required]`);
+              for (let input of inputs) {
+                     if (!input.value.trim()) {
+                     return false; // If any field is empty, return false
+                     }
+              }
+              return true; // If all fields are filled, return true
+              }
+
+              function nextStep(event) {
+              event.preventDefault(); // Prevent form submission on clicking 'Next'
+              if (!validateStep(currentStep)) {
+                     showNotification("All fields are mandatory!");
+                     return;
+              }
+              if (currentStep < 3) {
+                     currentStep++;
+                     showStep(currentStep);
+              }
+              }
+
+
+              function prevStep() {
+              if (currentStep > 1) {
+                     currentStep--;
+                     showStep(currentStep);
+              }
+              }
+
+              function showNotification(message) {
+                  const notification = document.getElementById('notification');
+                  const notificationMessage = document.getElementById('notification-message');
+                  notificationMessage.textContent = message;
+                  notification.classList.remove('hidden');
+                  setTimeout(() => {
+                      notification.classList.add('hidden');
+                  }, 2000); // Hide after 3 seconds
+              }
+
+              document.getElementById("login-form").addEventListener("submit", async function(event) {
+                     event.preventDefault(); // Prevent actual form submission
+
+                     const data = {
+                            email: document.getElementById("login_email").value,
+                            password: document.getElementById("login_password").value
+                     };
+
+                     try {
+                            const response = await fetch("/api/login/", {
+                            method: "POST",
+                            headers: {
+                                   "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                            });
+
+                            const result = await response.json();
+
+                            if (response.ok) {
+                            // Show the modal on successful login
+                            document.getElementById("otpSuccessModal").classList.remove("hidden");
+
+                            setTimeout(() => {
+                                   document.getElementById("otpSuccessModal").classList.add("hidden"); // Hide modal after 2 seconds
+                                   window.location.href = "/api/dash/";
+                                   // Redirect or perform any other action after login
+                            }, 2000);
+                            } else {
+                            alert("Error: " + JSON.stringify(result)); // Show error message
+                            }
+                     } catch (error) {
+                            console.error("Error:", error);
+                     }
+                     });
+
+                     document.getElementById("register-form").addEventListener("submit", async function(event) {
+                        event.preventDefault(); // Prevent actual form submission
+
+                        const data = {
+                            full_name: document.getElementById("full_name").value,
+                            email: document.getElementById("email").value,
+                            phone_number: document.getElementById("phone_number").value,
+                            pan_card: document.getElementById("pan_card").value,
+                            aadhaar_card: document.getElementById("aadhaar_card").value,
+                            dob: document.getElementById("dob").value,
+                            password: document.getElementById("password").value,
+                            confirm_password: document.getElementById("confirm_password").value
+                        };
+
+                        try {
+                            const response = await fetch("/api/register/", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify(data)
+                            });
+
+                            const result = await response.json();
+
+                            if (response.ok) {
+                                // Show success modal on successful registration
+                                document.getElementById("registerSuccessModal").classList.remove("hidden");
+
+                                setTimeout(() => {
+                                    document.getElementById("registerSuccessModal").classList.add("hidden"); // Hide modal after 2 seconds
+                                    window.location.href = "/api/dash/";
+                                    // Redirect or perform any additional actions after registration
+                                }, 2000);
+                            } else {
+                                alert("Error: " + JSON.stringify(result)); // Show error message
+                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                        }
+                    });
+
+              // Initialize the first step
+              showStep(currentStep);
+
+       
+              
+       </script>
+ </body>
+</html>
+
+
+
+
+    
+     
+
