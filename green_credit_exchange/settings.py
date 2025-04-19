@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'green_credit_exchange.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'registrationvalidate_db',
+        'NAME': 'gcx_db',
         'USER': 'root',
         'PASSWORD': 'Mysql.ashi15',
         'HOST': 'localhost',
@@ -135,3 +135,6 @@ AUTHENTICATION_BACKENDS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "green.User"
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 3600  # Default 1 hour
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Ensures session expires when the browser is closed

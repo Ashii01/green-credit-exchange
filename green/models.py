@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, BaseUserManager,  PermissionsMixin
 from django.db import models
+import uuid
 
 class UserManager(BaseUserManager):
     def create_user(self, full_name, phone_number, email, pan_card, aadhaar_card, dob, password=None, **extra_fields):
@@ -32,7 +33,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, username, email, password=None):
         if not username:
-            raise ValueError('The full_name is required')
+            raise ValueError('The username is required')
         if not email:
             raise ValueError('The email is required')
         
@@ -49,7 +50,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser, PermissionsMixin):
-    username= None
+    username= models.CharField(max_length=25, unique=True, null=True, blank=True)
     full_name =models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=10, unique=True)
@@ -64,8 +65,21 @@ class User(AbstractUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'  # Use email as the unique identifier
-    REQUIRED_FIELDS = ['full_name', 'phone_number', 'pan_card', 'aadhaar_card', 'dob']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username'] if is_superuser else ['full_name', 'phone_number', 'pan_card', 'aadhaar_card', 'dob']
 
     def __str__(self):
         return self.full_name
+
+
+class PartialUser(models.Model):
+    session_id = models.UUIDField(default=uuid.uuid4, unique=True)
+    full_name = models.CharField(max_length=50, null=True, blank=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
+    phone_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    pan_card = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    aadhaar_card = models.CharField(max_length=12, unique=True, null=True, blank=True)
+    dob = models.DateField(null=True, blank=True)
+    password = models.CharField(max_length=128, null=True, blank=True)  # hashed
+    created_at = models.DateTimeField(auto_now_add=True)
+

@@ -2,7 +2,6 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="{{ csrf_token }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='58' height='58' viewBox='0 0 58 58' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='10' fill='%23000000' /%3E%3Ccircle cx='10' cy='48' r='10' fill='%23000000' /%3E%3Ccircle cx='48' cy='48' r='10' fill='%23000000' /%3E%3Ccircle cx='48' cy='10' r='10' fill='%23000000' /%3E%3Cpath d='M42 10H15' stroke='%23000000' stroke-width='3' /%3E%3Cpath d='M12 16V42' stroke='%23000000' stroke-width='3' /%3E%3Cpath d='M15 49H44' stroke='%23000000' stroke-width='3' /%3E%3Cpath d='M49 44V29' stroke='%23000000' stroke-width='3' stroke-linecap='round' /%3E%3C/svg%3E">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
@@ -153,7 +152,7 @@
                      </div>
                      <div class="flex justify-between space-x-4">
                             <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="prevStep()">Previous</button>
-                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="nextStep(event)">Sign up</button>
+                            <button class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" type="submit">Sign up</button>
                      </div>
                      </div>
               </form>    
@@ -257,209 +256,162 @@
        <span id="notification-message"></span>
    </div>
    
-   <script>
-    function toggleForm() {
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const heading = document.getElementById('form-heading');
-        const paragraph = document.getElementById('form-paragraph');
-        const link = paragraph.querySelector('a');
+       <script>
 
-        if (loginForm.style.display === 'none') {
-            loginForm.style.display = 'block';
-            registerForm.style.display = 'none';
-            heading.textContent = "Sign in to continue";
-            paragraph.firstChild.textContent = "Don't have an account? ";
-            link.textContent = "Sign up";
-        } else {
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'block';
-            heading.textContent = "Create a new account";
-            paragraph.firstChild.textContent = "Already have an account? ";
-            link.textContent = "Sign in";
-        }
-    }
+              function toggleForm() {
+                  const loginForm = document.getElementById('login-form');
+                  const registerForm = document.getElementById('register-form');
+                  const heading = document.getElementById('form-heading');
+                  const paragraph = document.getElementById('form-paragraph');
+                  const link = paragraph.querySelector('a'); // Get the anchor tag
+          
+                  if (loginForm.style.display === 'none') {
+                      loginForm.style.display = 'block';
+                      registerForm.style.display = 'none';
+                      heading.textContent = "Sign in to continue";
+                      paragraph.firstChild.textContent = "Don't have an account? "; // Keep the existing structure
+                      link.textContent = "Sign up";
+                  } else {
+                      loginForm.style.display = 'none';
+                      registerForm.style.display = 'block';
+                      heading.textContent = "Create a new account";
+                      paragraph.firstChild.textContent = "Already have an account? "; // Keep the existing structure
+                      link.textContent = "Sign in";
+                  }
+              }
+          
+              let currentStep = 1;
+              function showStep(step) {
+              document.getElementById('step-1').style.display = 'none';
+              document.getElementById('step-2').style.display = 'none';
+              document.getElementById('step-3').style.display = 'none';
+              document.getElementById(`step-${step}`).style.display = 'block';
+              }
 
-    let currentStep = 1;
+              // Function to check if all required inputs are filled in the current step
+              function validateStep(step) {
+              const inputs = document.querySelectorAll(`#step-${step} input[required]`);
+              for (let input of inputs) {
+                     if (!input.value.trim()) {
+                     return false; // If any field is empty, return false
+                     }
+              }
+              return true; // If all fields are filled, return true
+              }
 
-    function showStep(step) {
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'none';
-        document.getElementById(`step-${step}`).style.display = 'block';
-    }
-
-    function validateStep(step) {
-        const inputs = document.querySelectorAll(`#step-${step} input[required]`);
-        for (let input of inputs) {
-            if (!input.value.trim()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    let partialUserId = null; // Store the session ID here
-
-    async function nextStep(event) {
-        event.preventDefault();
-
-        if (!validateStep(currentStep)) {
-            showNotification("All fields are mandatory!");
-            return;
-        }
-
-        if (currentStep === 1) {
-            const data = {
-                full_name: document.getElementById("full_name").value,
-                email: document.getElementById("email").value,
-                phone_number: document.getElementById("phone_number").value,
-            };
-
-            try {
-                const response = await fetch("/api/register/step1/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Store session_id from the response
-                    partialUserId = result.session_id;
-                    currentStep++;
-                    showStep(currentStep);
-                } else {
-                    alert("Error: " + JSON.stringify(result));
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-
-        else if (currentStep === 2) {
-            const data = {
-                session_id: partialUserId,  // Send the session ID here
-                pan_card: document.getElementById("pan_card").value,
-                aadhaar_card: document.getElementById("aadhaar_card").value,
-                dob: document.getElementById("dob").value,
-            };
-
-            try {
-                const response = await fetch("/api/register/step2/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    currentStep++;
-                    showStep(currentStep);
-                } else {
-                    alert("Error: " + JSON.stringify(result));
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-
-        else if (currentStep === 3) {
-            const data = {
-                session_id: partialUserId,  // Send session ID here as well
-                password: document.getElementById("password").value,
-                confirm_password: document.getElementById("confirm_password").value,
-            };
-
-            if (data.password !== data.confirm_password) {
-                showNotification("Passwords do not match!");
-                return;
-            }
-
-            try {
-                const response = await fetch("/api/register/step3/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    document.getElementById("registerSuccessModal").classList.remove("hidden");
-                    setTimeout(() => {
-                        document.getElementById("registerSuccessModal").classList.add("hidden");
-                        window.location.href = "/api/dash/";
-                    }, 2000);
-                } else {
-                    alert("Error: " + JSON.stringify(result));
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-    }
+              function nextStep(event) {
+              event.preventDefault(); // Prevent form submission on clicking 'Next'
+              if (!validateStep(currentStep)) {
+                     showNotification("All fields are mandatory!");
+                     return;
+              }
+              if (currentStep < 3) {
+                     currentStep++;
+                     showStep(currentStep);
+              }
+              }
 
 
-    function prevStep() {
-        if (currentStep > 1) {
-            currentStep--;
-            showStep(currentStep);
-        }
-    }
+              function prevStep() {
+              if (currentStep > 1) {
+                     currentStep--;
+                     showStep(currentStep);
+              }
+              }
 
-    function showNotification(message) {
-        const notification = document.getElementById('notification');
-        const notificationMessage = document.getElementById('notification-message');
-        notificationMessage.textContent = message;
-        notification.classList.remove('hidden');
-        setTimeout(() => {
-            notification.classList.add('hidden');
-        }, 2000);
-    }
+              function showNotification(message) {
+                  const notification = document.getElementById('notification');
+                  const notificationMessage = document.getElementById('notification-message');
+                  notificationMessage.textContent = message;
+                  notification.classList.remove('hidden');
+                  setTimeout(() => {
+                      notification.classList.add('hidden');
+                  }, 2000); // Hide after 3 seconds
+              }
 
-    document.getElementById("login-form").addEventListener("submit", async function (event) {
-        event.preventDefault();
+              document.getElementById("login-form").addEventListener("submit", async function(event) {
+                     event.preventDefault(); // Prevent actual form submission
 
-        const data = {
-            email: document.getElementById("login_email").value,
-            password: document.getElementById("login_password").value
-        };
+                     const data = {
+                            email: document.getElementById("login_email").value,
+                            password: document.getElementById("login_password").value
+                     };
 
-        try {
-            const response = await fetch("/api/login/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
+                     try {
+                            const response = await fetch("/api/login/", {
+                            method: "POST",
+                            headers: {
+                                   "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                            });
 
-            const result = await response.json();
+                            const result = await response.json();
 
-            if (response.ok) {
-                document.getElementById("otpSuccessModal").classList.remove("hidden");
+                            if (response.ok) {
+                            // Show the modal on successful login
+                            document.getElementById("otpSuccessModal").classList.remove("hidden");
 
-                setTimeout(() => {
-                    document.getElementById("otpSuccessModal").classList.add("hidden");
-                    window.location.href = "/api/dash/";
-                }, 2000);
-            } else {
-                alert("Error: " + JSON.stringify(result));
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    });
+                            setTimeout(() => {
+                                   document.getElementById("otpSuccessModal").classList.add("hidden"); // Hide modal after 2 seconds
+                                   window.location.href = "/api/dash/";
+                                   // Redirect or perform any other action after login
+                            }, 2000);
+                            } else {
+                            alert("Error: " + JSON.stringify(result)); // Show error message
+                            }
+                     } catch (error) {
+                            console.error("Error:", error);
+                     }
+                     });
 
-    showStep(currentStep);
-</script>
-</body>
+                     document.getElementById("register-form").addEventListener("submit", async function(event) {
+                        event.preventDefault(); // Prevent actual form submission
+
+                        const data = {
+                            full_name: document.getElementById("full_name").value,
+                            email: document.getElementById("email").value,
+                            phone_number: document.getElementById("phone_number").value,
+                            pan_card: document.getElementById("pan_card").value,
+                            aadhaar_card: document.getElementById("aadhaar_card").value,
+                            dob: document.getElementById("dob").value,
+                            password: document.getElementById("password").value,
+                            confirm_password: document.getElementById("confirm_password").value
+                        };
+
+                        try {
+                            const response = await fetch("/api/register/", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify(data)
+                            });
+
+                            const result = await response.json();
+
+                            if (response.ok) {
+                                // Show success modal on successful registration
+                                document.getElementById("registerSuccessModal").classList.remove("hidden");
+
+                                setTimeout(() => {
+                                    document.getElementById("registerSuccessModal").classList.add("hidden"); // Hide modal after 2 seconds
+                                    window.location.href = "/api/dash/";
+                                    // Redirect or perform any additional actions after registration
+                                }, 2000);
+                            } else {
+                                alert("Error: " + JSON.stringify(result)); // Show error message
+                            }
+                        } catch (error) {
+                            console.error("Error:", error);
+                        }
+                    });
+
+              // Initialize the first step
+              showStep(currentStep);
+
+       
+              
+       </script>
+ </body>
 </html>
-
-
-
-
-    
-     
-
