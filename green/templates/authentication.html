@@ -86,80 +86,132 @@
                      Sign up
               </a>
               </p>
-              <form id="login-form" method="POST" class="space-y-4">
-                {% csrf_token %}
-              <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" placeholder="Enter your registered Email ID" name="email" type="email" id="login_email" required/>
-              <div class="relative">
-                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" placeholder="Enter your password" name="password" type="password" id="login_password" required/>
-                     <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
-              </div>
-              <p class="text-gray-400 text-sm">
-                     <a class="text-[#73FDAA] hover:underline" href="#">
-                     Forgot Password?
-                     </a>
-                     </p>
-              <button class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" type="submit">
-                     Sign in
-              </button>
-              </form>
-              <form id="register-form" method="POST" class="space-y-4" style="display: none;">
-                {% csrf_token %}
-                     <!-- Step 1 of 3 -->
-                     <div id="step-1" class="space-y-4">
-                            <h1 class="text-xl sm:text-2xl font-semibold mb-1">
-                            Step 1 of 3
-                            </h1>
-                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                            placeholder="Enter your Full Name" name="full_name" id="full_name" type="text" required/>        
-                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                            placeholder="Enter your Email ID" name="email" id="email" type="email" required/>
-                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                            placeholder="Enter your Mobile Number" name="phone_number" id="phone_number" type="text" required/>
-                     <div class="flex justify-between">
-                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200 hidden" onclick="prevStep()">Previous</button>
-                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="nextStep(event)">Next</button>
-                     </div>
-                     </div>
-                     <!-- Step 2 of 3 -->
-                     <div id="step-2" class="space-y-4" style="display: none;">
-                            <h1 class="text-xl sm:text-2xl font-semibold mb-1">
-                            Step 2 of 3
-                            </h1>
-                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                            placeholder="Enter your PAN" name="pan_card" type="text" id="pan_card" required/>
-                     <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                            placeholder="Enter your Aadhar Number" name="aadhaar_card" id="aadhaar_card" type="text" required/>
-                    <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                            placeholder="Enter your Date of Birth" name="dob" id="dob" type="date" required/>
-                     <div class="flex justify-between space-x-4">
-                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="prevStep()">Previous</button>
-                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="nextStep(event)">Next</button>
-                     </div>
-                     </div>
-                     <!-- Step 3 of 3 -->
-                     <div id="step-3" class="space-y-4" style="display: none;">
-                            <h1 class="text-xl sm:text-2xl font-semibold mb-1">
-                            Step 3 of 3
-                            </h1>
-                     <div class="relative">
-                            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                                   placeholder="Create a password" name="password" id="password" type="password" required/>
-                            <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
-                     </div>
-                     <div class="relative">
-                            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
-                                   placeholder="Confirm your password" name="confirm_password" id="confirm_password" type="password" required/>
-                            <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
-                     </div>
-                     <div class="flex justify-between space-x-4">
-                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="prevStep()">Previous</button>
-                            <button type="button" class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" onclick="nextStep(event)">Sign up</button>
-                     </div>
-                     </div>
-              </form>    
-              </div>
-              </div>
-       </div>
+              <!-- LOGIN FORM -->
+<form id="login-form" method="POST" class="space-y-4">
+    {% csrf_token %}
+
+    <div>
+        <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+               placeholder="Enter your registered Email ID" 
+               name="email" type="email" id="login_email" required />
+        <div id="login_email-error" class="error-msg text-sm text-red-500 mt-1"></div>
+    </div>
+
+    <div class="relative">
+        <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field" 
+               placeholder="Enter your password" 
+               name="password" type="password" id="login_password" required />
+        <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
+        <div id="login_password-error" class="error-msg text-sm text-red-500 mt-1"></div>
+    </div>
+
+    <p class="text-gray-400 text-sm">
+        <a class="text-[#73FDAA] hover:underline" href="#">
+            Forgot Password?
+        </a>
+    </p>
+
+    <button class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200" type="submit">
+        Sign in
+    </button>
+</form>
+
+<!-- REGISTRATION FORM -->
+<form id="register-form" method="POST" class="space-y-4" style="display: none;">
+    {% csrf_token %}
+
+    <!-- Step 1 of 3 -->
+    <div id="step-1" class="space-y-4">
+        <h1 class="text-xl sm:text-2xl font-semibold mb-1">Step 1 of 3</h1>
+
+        <div>
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Enter your Full Name" name="full_name" id="full_name" type="text" required />
+            <div id="full_name-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div>
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Enter your Email ID" name="email" id="email" type="email" required />
+            <div id="email-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div>
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Enter your Mobile Number" name="phone_number" id="phone_number" type="text" required />
+            <div id="phone_number-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div class="flex justify-between">
+            <button type="button"
+                    class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200 hidden"
+                    onclick="prevStep()">Previous</button>
+            <button type="button"
+                    class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200"
+                    onclick="nextStep(event)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 2 of 3 -->
+    <div id="step-2" class="space-y-4" style="display: none;">
+        <h1 class="text-xl sm:text-2xl font-semibold mb-1">Step 2 of 3</h1>
+
+        <div>
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Enter your PAN" name="pan_card" type="text" id="pan_card" required />
+            <div id="pan_card-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div>
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Enter your Aadhar Number" name="aadhaar_card" id="aadhaar_card" type="text" required />
+            <div id="aadhaar_card-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div>
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Enter your Date of Birth" name="dob" id="dob" type="date" required />
+            <div id="dob-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div class="flex justify-between space-x-4">
+            <button type="button"
+                    class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200"
+                    onclick="prevStep()">Previous</button>
+            <button type="button"
+                    class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200"
+                    onclick="nextStep(event)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 3 of 3 -->
+    <div id="step-3" class="space-y-4" style="display: none;">
+        <h1 class="text-xl sm:text-2xl font-semibold mb-1">Step 3 of 3</h1>
+
+        <div class="relative">
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Create a password" name="password" id="password" type="password" required />
+            <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
+            <div id="password-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div class="relative">
+            <input class="w-full p-3 bg-gray-800 rounded-md border border-gray-700 focus:outline-none input-field"
+                   placeholder="Confirm your password" name="confirm_password" id="confirm_password" type="password" required />
+            <i class="fas fa-eye absolute right-4 top-4 text-gray-400"></i>
+            <div id="confirm_password-error" class="error-msg text-sm text-red-500 mt-1"></div>
+        </div>
+
+        <div class="flex justify-between space-x-4">
+            <button type="button"
+                    class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200"
+                    onclick="prevStep()">Previous</button>
+            <button type="button"
+                    class="w-full p-3 bg-[#73FDAA] rounded-md text-black font-semibold hover:bg-[#BBFFFF] transition duration-200"
+                    onclick="nextStep(event)">Sign up</button>
+        </div>
+    </div>
+</form>
        <div id="otpSuccessModal" class="fixed inset-0 bg-black/30 backdrop-blur-md flex justify-center items-center hidden z-[1000]">
                   <div class="relative w-full max-w-sm mx-4">
                       <!-- Decorative Elements -->
@@ -281,31 +333,48 @@
     }
 
     let currentStep = 1;
+    let partialUserId = null;
 
     function showStep(step) {
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'none';
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById(`step-${i}`).style.display = 'none';
+        }
         document.getElementById(`step-${step}`).style.display = 'block';
+    }
+
+    function clearAllErrors() {
+        const errorElements = document.querySelectorAll('[id$="-error"]');
+        errorElements.forEach(el => {
+            el.textContent = "";
+            el.style.display = "none";
+        });
+    }
+
+    function showFieldError(fieldId, message) {
+        const errorDiv = document.getElementById(`${fieldId}-error`);
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
     }
 
     function validateStep(step) {
         const inputs = document.querySelectorAll(`#step-${step} input[required]`);
-        for (let input of inputs) {
+        let isValid = true;
+        inputs.forEach(input => {
             if (!input.value.trim()) {
-                return false;
+                showFieldError(input.id, "This field is required");
+                isValid = false;
             }
-        }
-        return true;
+        });
+        return isValid;
     }
-
-    let partialUserId = null; // Store the session ID here
 
     async function nextStep(event) {
         event.preventDefault();
+        clearAllErrors();
 
         if (!validateStep(currentStep)) {
-            showNotification("All fields are mandatory!");
             return;
         }
 
@@ -326,12 +395,13 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    // Store session_id from the response
                     partialUserId = result.session_id;
                     currentStep++;
                     showStep(currentStep);
                 } else {
-                    alert("Error: " + JSON.stringify(result));
+                    for (const field in result) {
+                        showFieldError(field, result[field]);
+                    }
                 }
             } catch (error) {
                 console.error("Error:", error);
@@ -340,7 +410,7 @@
 
         else if (currentStep === 2) {
             const data = {
-                session_id: partialUserId,  // Send the session ID here
+                session_id: partialUserId,
                 pan_card: document.getElementById("pan_card").value,
                 aadhaar_card: document.getElementById("aadhaar_card").value,
                 dob: document.getElementById("dob").value,
@@ -359,7 +429,9 @@
                     currentStep++;
                     showStep(currentStep);
                 } else {
-                    alert("Error: " + JSON.stringify(result));
+                    for (const field in result) {
+                        showFieldError(field, result[field]);
+                    }
                 }
             } catch (error) {
                 console.error("Error:", error);
@@ -367,16 +439,19 @@
         }
 
         else if (currentStep === 3) {
-            const data = {
-                session_id: partialUserId,  // Send session ID here as well
-                password: document.getElementById("password").value,
-                confirm_password: document.getElementById("confirm_password").value,
-            };
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
 
-            if (data.password !== data.confirm_password) {
-                showNotification("Passwords do not match!");
+            if (password !== confirmPassword) {
+                showFieldError("confirm_password", "Passwords do not match");
                 return;
             }
+
+            const data = {
+                session_id: partialUserId,
+                password: password,
+                confirm_password: confirmPassword,
+            };
 
             try {
                 const response = await fetch("/api/register/step3/", {
@@ -394,14 +469,15 @@
                         window.location.href = "/api/dash/";
                     }, 2000);
                 } else {
-                    alert("Error: " + JSON.stringify(result));
+                    for (const field in result) {
+                        showFieldError(field, result[field]);
+                    }
                 }
             } catch (error) {
                 console.error("Error:", error);
             }
         }
     }
-
 
     function prevStep() {
         if (currentStep > 1) {
@@ -422,6 +498,7 @@
 
     document.getElementById("login-form").addEventListener("submit", async function (event) {
         event.preventDefault();
+        clearAllErrors(); // ✅ Clear all previous error messages
 
         const data = {
             email: document.getElementById("login_email").value,
@@ -439,20 +516,20 @@
 
             if (response.ok) {
                 document.getElementById("otpSuccessModal").classList.remove("hidden");
-
                 setTimeout(() => {
                     document.getElementById("otpSuccessModal").classList.add("hidden");
                     window.location.href = "/api/dash/";
                 }, 2000);
             } else {
-                alert("Error: " + JSON.stringify(result));
+                if (result.email) showFieldError("login_email", result.email);
+                if (result.password) showFieldError("login_password", result.password);
+                if (result.non_field_errors) showFieldError("login_password", result.non_field_errors.join(', '));
+                if (result.detail) showFieldError("login_password", result.detail);
             }
         } catch (error) {
-            console.error("Error:", error);
+            showFieldError("login_password", "Something went wrong. Please try again.");
         }
     });
-
-    showStep(currentStep);
 </script>
 </body>
 </html>
